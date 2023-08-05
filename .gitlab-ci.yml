@@ -18,6 +18,7 @@ test python:
   stage: test
   script:
     - python3 -V # print version of python3
+    - pip install --upgrade pip wheel setuptools "poetry==1.5.0"
     - poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
     - pytest --junitxml=build/pytest.xml --cov=src/
     - black src --check
