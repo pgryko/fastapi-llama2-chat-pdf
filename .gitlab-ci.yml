@@ -20,9 +20,10 @@ test python:
     - python3 -V # print version of python3
     - pip install --upgrade pip wheel setuptools "poetry==1.5.0"
     - poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
-    - pytest --junitxml=build/pytest.xml --cov=src/
+    - python -m pytest --junitxml=build/pytest.xml --cov=src/
     - black src --check
     - flake8 --ignore=E501, W503, E722, E203 --max-line-length=100 --select=src/
+    - ls -la
   artifacts:
     reports:
       junit:

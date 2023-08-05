@@ -24,7 +24,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd src
           python -m pip install --upgrade pip
           pip install --upgrade pip wheel setuptools "poetry==1.5.0"
           poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
