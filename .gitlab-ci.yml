@@ -11,3 +11,23 @@ sast:
   stage: test
 include:
 - template: Security/SAST.gitlab-ci.yml
+
+test python:
+  image: python:latest
+
+  stage: test
+  script:
+    - python3 -V # print version of python3
+    - poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
+    - pytest --junitxml=build/pytest.xml --cov=src/
+    - black src --check
+    - flake8 --ignore=E501, W503, E722, E203 --max-line-length=100 --select=src/
+  artifacts:
+    reports:
+      junit:
+       - build/pytest.xml
+
+  cache:
+    paths:
+      - .cache/pip
+      - venv/
