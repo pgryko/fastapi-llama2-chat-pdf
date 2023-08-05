@@ -4,6 +4,7 @@ from langchain.text_splitter import CharacterTextSplitter
 import io
 import replicate
 from fastapi import HTTPException
+from chromadb.api.types import Documents, Document
 
 from schemas import Message
 
@@ -66,7 +67,7 @@ def get_pdf_text(pdf_doc: bytes) -> str:
     return text
 
 
-def get_text_chunks(text: str) -> list[str]:
+def get_text_chunks(text: str) -> Documents:
     """Splits a given text into chunks of specified size with a specified
     overlap.
 
@@ -88,4 +89,5 @@ def get_text_chunks(text: str) -> list[str]:
         length_function=len,
     )
     chunks = text_splitter.split_text(text)
+
     return chunks

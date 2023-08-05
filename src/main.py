@@ -5,9 +5,9 @@ from chromadb.utils import embedding_functions
 import chromadb
 from chromadb.api.models.Collection import Collection
 
-from chromadb.api.types import GetResult
+from chromadb.api.types import GetResult, Documents
 
-from services import stream_chat
+from services import stream_chat, get_pdf_text, get_text_chunks
 
 app = FastAPI()
 
@@ -22,7 +22,11 @@ default_ef = embedding_functions.DefaultEmbeddingFunction()
 
 client = chromadb.PersistentClient(path="./chroma")
 # TODO: create a collection per user
-collection: Collection = client.get_or_create_collection(name="default")
+collection: Collection = client.get_or_create_collection(
+    name="default", embedding_function=default_ef
+)
+
+# TODO: Add auth and rate limiting on all APIs
 
 
 @app.get("/chroma/heartbeat")
@@ -43,11 +47,6 @@ async def stream_chat(chat_input: str):
 @app.post("/upload")
 async def upload(file: UploadFile = File(...)):
     content: bytes = await file.read()
-    vector = convert_to_vector(content)  # You'll need to implement this function
-
-    # Add vector to Faiss index
-    try:
-        index.add(np.array([vector]))
-        return {"detail": "File uploaded and vector added to datastore"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    text = get_pdf_text(content)
+    text_chunks: Documents = get_text_chunks(text)
+    collection.add(documents=text_chunks, ids=[str(i) for i in range(len(text_chunks))])
