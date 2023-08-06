@@ -35,3 +35,4 @@ test python:
     paths:
       - .cache/pip
       - venv/
+      - /root/.cache/pypoetry/
