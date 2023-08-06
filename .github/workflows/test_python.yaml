@@ -39,4 +39,5 @@ jobs:
 
       - name: Test with pytest
         run: |
-          pytest --junitxml=junit/test-results.xml --cov=src/ --cov-report=xml --cov-report=html
+          cd src
+          pytest --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-report=html

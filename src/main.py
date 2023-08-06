@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 from chromadb.utils import embedding_functions
@@ -50,3 +51,7 @@ async def upload(file: UploadFile = File(...)):
     text = get_pdf_text(content)
     text_chunks: Documents = get_text_chunks(text)
     collection.add(documents=text_chunks, ids=[str(i) for i in range(len(text_chunks))])
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

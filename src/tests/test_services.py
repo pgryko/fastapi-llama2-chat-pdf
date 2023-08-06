@@ -1,5 +1,7 @@
+import io
+
 import pytest
-from ..services import get_pdf_text
+from ..services import get_pdf_text, compute_md5
 
 
 def test_get_pdf_text_valid():
@@ -30,3 +32,17 @@ def test_get_pdf_text_invalid():
     # Using the get_pdf_text function to extract text
     with pytest.raises(Exception):  # Expecting an exception due to invalid content
         get_pdf_text(pdf_content)
+
+
+def test_compute_md5():
+    # Create an in-memory binary stream with some data
+    data = b"Hello, World!"
+    file_object = io.BytesIO(data)
+
+    # Compute its MD5 hash
+    result = compute_md5(file_object)
+
+    # Known MD5 hash for the string "Hello, World!"
+    expected = "65a8e27d8879283831b664bd8b7f0ad4"
+
+    assert result == expected

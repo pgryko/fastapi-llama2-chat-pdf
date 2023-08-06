@@ -1,10 +1,11 @@
-from typing import AsyncIterable
+import hashlib
+from typing import AsyncIterable, BinaryIO
 from pypdf import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 import io
 import replicate
 from fastapi import HTTPException
-from chromadb.api.types import Documents, Document
+from chromadb.api.types import Documents
 
 from schemas import Message
 
@@ -91,3 +92,27 @@ def get_text_chunks(text: str) -> Documents:
     chunks = text_splitter.split_text(text)
 
     return chunks
+
+
+def compute_md5(file_object: BinaryIO) -> str:
+    """
+    Compute the MD5 hash of the contents of a file-like object.
+
+    Args:
+        file_object (BinaryIO): A file-like object that supports binary read and seek operations.
+
+    Returns:
+        str: The MD5 hash of the file's contents.
+    """
+
+    # Create an MD5 hash object
+    md5 = hashlib.md5()
+
+    # Read the file in chunks to avoid using too much memory
+    for chunk in iter(lambda: file_object.read(4096), b""):
+        md5.update(chunk)
+
+    # Reset the file pointer to its beginning
+    file_object.seek(0)
+
+    return md5.hexdigest()
