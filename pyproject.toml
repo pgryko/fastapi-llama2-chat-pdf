@@ -5,7 +5,6 @@ description = ""
 authors = ["Piotr Gryko <piotr.gryko@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "fastapi_llama2_reactjs_chat_pdf"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
