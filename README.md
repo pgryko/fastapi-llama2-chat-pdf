@@ -13,7 +13,7 @@ This project is hosted on [GitHub](https://github.com/pgryko/fastapi-llama2-reac
 ```shell
 poetry install
 poetry shell
-uvicorn main:app --reload
+uvicorn src.main:app --reload
 ```
 
 ```bash

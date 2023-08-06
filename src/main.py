@@ -8,8 +8,13 @@ from chromadb.api.models.Collection import Collection
 
 from chromadb.api.types import GetResult, Documents
 
-from services import stream_chat, get_pdf_text, get_text_chunks, compute_md5
-from src.schemas import GetResultMetaNone
+from .services import (
+    stream_chat as service_stream_chat,
+    get_pdf_text,
+    get_text_chunks,
+    compute_md5,
+)
+from .schemas import GetResultMetaNone
 
 app = FastAPI()
 
@@ -52,7 +57,16 @@ async def chroma_delete() -> None:
 
 @app.post("/stream_chat/{chat_input}", response_class=StreamingResponse)
 async def stream_chat(chat_input: str):
-    return StreamingResponse(stream_chat(chat_input), media_type="text/event-stream")
+    return StreamingResponse(
+        service_stream_chat(chat_input), media_type="text/event-stream"
+    )
+
+
+@app.get("/stream_chat/{chat_input}", response_class=StreamingResponse)
+async def stream_chat(chat_input: str):
+    return StreamingResponse(
+        service_stream_chat(chat_input), media_type="text/event-stream"
+    )
 
 
 @app.post("/upload")
@@ -68,5 +82,6 @@ async def upload(file: UploadFile = File(...)):
     )
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+#
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="0.0.0.0", port=8000)
