@@ -1,5 +1,5 @@
 import hashlib
-from typing import AsyncIterable, BinaryIO
+from typing import AsyncIterable, BinaryIO, Union
 from pypdf import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 import io
@@ -83,10 +83,11 @@ def get_text_chunks(text: str) -> Documents:
         >>> get_text_chunks(text)
         ['Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, urna id aliquet lacinia, nunc nisl ultrices nunc,', 'id lacinia nunc nisl id nisl.']
     """
+    # This doesn't actually work corretly, only splits on newlines
     text_splitter = CharacterTextSplitter(
         separator="\n",
-        chunk_size=1000,
-        chunk_overlap=200,
+        chunk_size=100,
+        chunk_overlap=20,
         length_function=len,
     )
     chunks = text_splitter.split_text(text)
@@ -94,25 +95,28 @@ def get_text_chunks(text: str) -> Documents:
     return chunks
 
 
-def compute_md5(file_object: BinaryIO) -> str:
+def compute_md5(data: Union[bytes, BinaryIO]) -> str:
     """
-    Compute the MD5 hash of the contents of a file-like object.
+    Compute the MD5 hash of the contents of a bytes object or file-like object.
 
     Args:
-        file_object (BinaryIO): A file-like object that supports binary read and seek operations.
+        data (Union[bytes, BinaryIO]): A bytes object or file-like object that supports
+                                       binary read and seek operations.
 
     Returns:
-        str: The MD5 hash of the file's contents.
+        str: The MD5 hash of the contents.
     """
 
-    # Create an MD5 hash object
     md5 = hashlib.md5()
 
-    # Read the file in chunks to avoid using too much memory
-    for chunk in iter(lambda: file_object.read(4096), b""):
-        md5.update(chunk)
+    if isinstance(data, bytes):
+        md5.update(data)
+    else:
+        # Read the file in chunks to avoid using too much memory
+        for chunk in iter(lambda: data.read(4096), b""):
+            md5.update(chunk)
 
-    # Reset the file pointer to its beginning
-    file_object.seek(0)
+        # Reset the file pointer to its beginning
+        data.seek(0)
 
     return md5.hexdigest()
