@@ -65,7 +65,13 @@ async def stream_chat(chat_input: str):
 @app.get("/stream_chat/{chat_input}", response_class=StreamingResponse)
 async def stream_chat(chat_input: str):
     return StreamingResponse(
-        service_stream_chat(chat_input), media_type="text/event-stream"
+        service_stream_chat(chat_input),
+        media_type="text/event-stream",
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "no-cache",
+            "Transfer-Encoding": "chunked",
+        },
     )
 
 

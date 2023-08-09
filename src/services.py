@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 from typing import AsyncIterable, BinaryIO, Union
 from pypdf import PdfReader
@@ -36,6 +37,13 @@ async def stream_chat(user_input: str) -> AsyncIterable[str | bytes]:
             },
         )
         for item in output:
+            # print(item)
+            # Dumb as hell - streaming only works if you introduce a tiny delay
+            # Hypothesis
+            # The delay essentially serves as a workaround by allowing the client to catch up and request the
+            # next chunk of data. It's worth investigating further if there are other underlying issues,
+            # such as buffering in your server or any intermediaries, that might affect real-time streaming.
+            await asyncio.sleep(0.000001)  # Introducing a delay
             yield item
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
