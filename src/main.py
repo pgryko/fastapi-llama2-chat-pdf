@@ -1,12 +1,12 @@
-import uvicorn
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import StreamingResponse
 from chromadb.utils import embedding_functions
 
 import chromadb
 from chromadb.api.models.Collection import Collection
 
-from chromadb.api.types import GetResult, Documents
+from chromadb.api.types import Documents
+from starlette.responses import RedirectResponse
 
 from .services import (
     stream_chat as service_stream_chat,
@@ -16,7 +16,12 @@ from .services import (
 )
 from .schemas import GetResultMetaNone
 
-app = FastAPI()
+app = FastAPI(
+    title="FastAPI llama2 chat",
+    description="An API that lets you use llama2 to chat with documents.",
+    version="1.0.0",
+    swagger_ui_url="/docs",
+)
 
 default_ef = embedding_functions.DefaultEmbeddingFunction()
 
@@ -86,6 +91,11 @@ async def upload(file: UploadFile = File(...)):
     collection.add(
         documents=text_chunks, ids=[md5 + str(i) for i in range(len(text_chunks))]
     )
+
+
+@app.get("/")
+def redirect_to_docs():
+    return RedirectResponse(url="/docs")
 
 
 #
